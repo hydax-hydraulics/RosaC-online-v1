@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Display</title>
+</head>
+<link rel="stylesheet" type="text/css" href="123.css"
+
+<meta charset="utf-8">
+<title>SINK</title>
+ 
+<style>
+#container {
+	margin: 0px auto;
+	width: 300px;
+	height: 225px;
+	border: 10px #333 solid;
+}
+#videoElement {
+	width: 300px;
+	height: 225px;
+	background-color: #666;
+}
+</style>
+</head>
+<body>
+   
+
+<body style="background-color:black;">
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div style="text-align: center">
+  <img src="static/eye8.gif" alt="eye" style="width: 500; height: 700;">
+</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+ 
+  
+ 
+
+
+
+<br>
+<br>
+<br>
+<audio controls autoplay>
+    <source src="static/signature.mp3"/>
+
+</audio>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>
+    <button id="toggleVideoEl" onclick="toggleVideo()">Hide Video</button>
+    <button id="toggleDetectingEl" onclick="toggleDetecting()">Start Detecting</button>
+  </p>
+  <script src="app.js"></script>
+<p>
+<input type="button" value="Take Snapshot" onClick="take_snapshot()"/>
+</p>
+ <div class="col-md-6">
+                    <div id="results">
+                        Your captured image will appear here
+                    </div>
+                </div>
+                <div class="col-md-12 text-center">
+                    <br>
+                    
+                    
+                </div>
+</body>
+
+
+<script>
+    Webcam.set({
+        width:490,
+        height:390,
+        image_format:'jpeg',
+        jpeg_quality:90
+    })
+    Webcam.attach("#camera")
+    
+    
+    function take_snapshot() {
+
+
+
+        Webcam.snap( function(data_uri) {
+       // display results in page
+       $(".image-tag").val(data_uri)
+       document.getElementById('results').innerHTML = 
+        '<img src="'+data_uri+'"/>';
+    } );
+    }
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+    body {
+      margin: 0;
+      padding: 0;
+      
+    }
+
+    table {
+            width: 50%;
+            border-collapse: collapse;
+        }
+        
+    #image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 80px;
+        }
+
+    h1 {
+        font-size: 17px;
+    }
+
+
+    .video-container {
+           position: relative;
+           width: 100%;
+           padding-bottom: 56.25%; /* 16:9 aspect ratio (height / width * 100%) */
+           overflow: hidden;
+    }
+
+    .video-container video {
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+    }
+   
+    footer.footer-section {
+      background-color: black;
+      color: white;
+      padding: 18px 0;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    footer.footer-section .container-4 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    
+</style>
+</head>
+
+<table>
+<body>
+<div style="overflow-x:auto;">
+    <table>
+    </table>
+    <div id="image-container">
+        <img src="static/rosai.jpg" alt="Image">
+    </div>
+
+</div>
+
+</body>
+
+<br>
+<body>
+<div style="overflow-x:auto;">
+
+
+<main>
+    <center>
+       
+    
+       <div>
+          <h1>Welcome to TEACH Screen</h1>      
+       </div><br><br>
+           <label><b> Name of the Part
+           </b>
+           </label>
+           <br><br>
+           
+           <input id="folderNameInput" type="text" name="name" placeholder="Enter the Part name" required> 
+           <button id="createButton" type="submit">
+           <img id="button-image" src="static/create1.png" width="40" height="10" alt="Capture Image">
+           </button>
+           <script>
+               document.getElementById('createButton').addEventListener('click', function() {
+                   var folderName = document.getElementById('folderNameInput').value;
+                   fetch('/create', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ folder_name: folderName })
+                   })
+                   .then(response => {
+            
+                       if (response.ok) {
+                         alert(`Folder created successfully.`);
+                         window.location.href = "/nextpage"
+                    
+                       } else {
+                             alert('Error uploading image.');
+                       }
+                   })
+                   .then(message => console.log(message))
+                   .catch(error => {
+                       console.error('Error:', error);
+                           alert('Error creating folder');
+                   });
+               });
+           </script>
+           <br><br>
+
+<div class="video-container">
+        <video id="video" autoplay></video>
+</div>
+<br>
+<br>
+<button class="button" id="captureButton" type="submit">
+  <img id="button-image" src="static/11.png" width="60" height="60" alt="Capture Image">
+</button>
+
+<br><br><br>
+
+<button>
+   <img src="static/back.png" value="Back"  width="60" height="60" onclick="history.back()">
+</button> 
+<br><br>
+
+</center>
+
+</main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        const video = document.getElementById('video');
+        const captureButton = document.getElementById('captureButton');
+        const switchButton = document.getElementById('switchButton');
+
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Constraints to access back camera
+            var constraints = { video: { facingMode: 'environment' } };
+
+            // Access the camera
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+                    // Set the video stream as the source of the video element
+                    video.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.error('Error accessing the camera:', error);
+                });
+        } else {
+            console.error('getUserMedia is not supported on your browser');
+        }       
+        
+        captureButton.addEventListener('click', () => {
+            
+            var canvas = document.createElement('canvas');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            fetch('/page1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ 'image_data': imageData }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert(`Image saved successfully.`);
+                    window.location.href = "/next_page"
+                } else {
+                     alert('Error uploading image.');
+                }
+            })
+            .then(message => console.log(message))
+            .catch(error => {
+                console.error('Error:', error);
+            });
+            
+                                
+       });
+   });
+</script>
+<br>
+<br>
+<footer class="footer-section">
+     <div class="container-4">
+      <div class="nav-items"></div>
+      <div class="text-6">&copy; 2022 HYDAX Hydraulics Pvt. Ltd. All rights reserved.</div>
+     </div>
+  </footer>
+
+
+
+</body>
+</table>
+</html>

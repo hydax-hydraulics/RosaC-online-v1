@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Async Page</title>
+</head>
+<body>
+  <script>
+    function checkForFaceDetection() {
+      fetch('/check_face_detection')  // Make a request to check if face detection is done
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Failed to fetch data');
+          }
+        })
+        .then(data => {
+          if (data.faceDetected) {
+            window.location.href = '/detected';  // Redirect to detected.html if face detected
+          } else {
+            setTimeout(checkForFaceDetection, 1000);  // Check again after 1 second if face not detected yet
+          }
+        })
+        .catch(error => {
+          console.error('Error checking face detection:', error);
+        });
+    }
+
+    // Start checking for face detection once the page is loaded
+    window.onload = function() {
+      checkForFaceDetection();
+    };
+  </script>
+</body>
+</html>

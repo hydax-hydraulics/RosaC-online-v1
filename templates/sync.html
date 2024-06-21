@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Image Capture</title>
+    <script>
+        navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            video.srcObject = stream;
+            document.body.appendChild(video);
+            
+            // Create canvas for capturing frames
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            video.addEventListener('play', function() {
+                setInterval(function() {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Convert canvas content to base64
+                    var imageData = canvas.toDataURL('image/png');
+
+                    
+                    // Send the base64 image data to the Flask backend
+                    fetch('/upload_image', {
+                        method: 'POST',
+                        headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({ 'image_data': imageData }),
+                    })
+                        
+                    .then(function(response) {
+                        if (response.ok) {
+                            console.log('Image uploaded successfully');
+                        } else {
+                            console.error('Error uploading image');
+                        }
+                    })
+                    .then(data => {
+                        if (data.faceDetected) {
+                            // Stop capturing frames if face is detected
+
+                            clearInterval(intervalId);
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error uploading image:', error);
+                    });
+                }, 5000); // Capture a frame every 5 seconds
+            });
+            video.play();
+        })
+        .catch(function(err) {
+            console.log('Error accessing the webcam:', err);
+        });
+    </script>
+</head>
+<body>
+<video id="video" width="640" height="480" autoplay></video>
+
+</body>
+</html>

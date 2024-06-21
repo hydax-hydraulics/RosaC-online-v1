@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Save Live Image</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+</head>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #video-container {
+            position: absolute;
+        }
+
+        #video {
+            width: 648px;
+            height: 480px;
+     
+        }
+
+
+
+        /* Added CSS for footer */
+        footer.footer-section {
+        background-color: black;
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+        }
+
+        footer.footer-section .container-4 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
+
+        .image-link {
+            cursor: pointer;
+        }
+
+
+</style>
+
+
+<body>
+
+<div id="image-container">
+        <img src="static/rosai.jpg" alt="Image" width="200" height="200">
+    </div>
+
+</body>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<body>
+
+
+    <!-- Thumbnail to trigger the popup -->
+    <img src="{{ href_value }}" alt="Thumbnail" width="200" height="200">
+    <br><br>
+  
+    <center>
+       <div>
+          <h1>Welcome to OPEN Screen</h1>      
+       </div>
+       <div id="video-container">
+       <video id="video" autoplay="true"></video>
+
+
+       <br><br>
+         <button id="switchButton">Switch Camera</button>
+       </div>
+       <br>
+       <br>
+       
+          <button id="test" style="background-color:green;" type="submit">Test</button>
+         
+         
+
+       
+
+    <script>
+          document.addEventListener('DOMContentLoaded', function () {
+        
+            const video = document.getElementById('video');
+            const switchButton = document.getElementById('switchButton');
+            const captureBtn = document.getElementById('test');
+            
+            let currentStream;
+
+            async function initializeCamera() {
+                try {
+                    const constraints = { video: { facingMode: 'user' } }; // Start with front camera
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    video.srcObject = stream;
+                    currentStream = stream;
+                } catch (err) {
+                console.error('Error accessing the camera:', err);
+                }
+            }
+
+            switchButton.addEventListener('click', async () => {
+                if (!currentStream) return; // No stream, do nothing
+
+                const tracks = currentStream.getTracks();
+                tracks.forEach(track => track.stop()); // Stop the current stream
+
+                const newFacingMode = currentStream.getVideoTracks()[0].getSettings().facingMode === 'user' ? 'user' : 'environment'; // Switch facing mode
+                const newConstraints = { video: { facingMode: newFacingMode } };
+
+                try {
+                    const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
+                    video.srcObject = newStream;
+                    currentStream = newStream;
+                } catch (err) {
+                    console.error('Error switching camera:', err);
+                }
+            });
+
+            // Initialize with the front camera
+            initializeCamera();
+        
+
+
+            captureBtn.addEventListener('click', () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/png');
+
+                fetch('/test', {
+                    method: 'POST',
+                    headers: {
+                         'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ 'image_data': imageData }),
+                    })
+                    .then(response => { 
+                    if (response.ok) {
+                        // Redirect if the server response is successful
+                        window.location.href = '/verify';
+                    } else {
+                        console.error('Failed to fetch data:', response.statusText);
+                    }
+                })
+                    .then(message => console.log(message))
+                    .catch(error => console.error('Error uploading file:', error));
+          });
+       });
+    </script>
+ 
+   
+
+
+<br><br>
+
+ <button onclick="openModal()" style="background-color:green">Verify</button>
+  
+
+<br>
+<br>
+<br>
+<center>
+ <button>
+        
+<img src="static/back.png" value="Back"  onclick="history.back()">
+          
+ </button> 
+</center>
+           
+
+</body>
+
+<footer class="footer-section">
+  <div class="container-4">
+    <div class="nav-items"></div>
+    <div class="text-6">&copy; 2022 HYDAX Hydraulics Pvt. Ltd. All rights reserved.</div>
+  </div>
+</footer>
+</center>
+
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camera Switch</title>
+<style>
+</style>
+</head>
+<body>
+
+
+<video id="video" width="640" height="480" autoplay></video>
+
+<br><br>
+<button id="switchButton">Switch Camera</button>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+    const video = document.getElementById('video');
+    const switchButton = document.getElementById('switchButton');
+    
+    let currentStream;
+
+            async function initializeCamera() {
+                try {
+                    const constraints = { video: { facingMode: 'user' } }; // Start with front camera
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    video.srcObject = stream;
+                    currentStream = stream;
+                } catch (err) {
+                console.error('Error accessing the camera:', err);
+                }
+            }
+
+            switchButton.addEventListener('click', async () => {
+                if (!currentStream) return; // No stream, do nothing
+
+                const tracks = currentStream.getTracks();
+                tracks.forEach(track => track.stop()); // Stop the current stream
+
+                const newFacingMode = currentStream.getVideoTracks()[0].getSettings().facingMode === 'environment' ? 'user' : 'environment'; // Switch facing mode
+                const newConstraints = { video: { facingMode: newFacingMode } };
+
+                try {
+                    const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
+                    video.srcObject = newStream;
+                    currentStream = newStream;
+                } catch (err) {
+                    console.error('Error switching camera:', err);
+                }
+            });
+
+            // Initialize with the front camera
+            initializeCamera();
+
+});
+</script>
+
+
+</body>
+</html>
+

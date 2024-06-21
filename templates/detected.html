@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detected</title>
+    <style>
+        /* CSS for image responsiveness */
+        img {
+            max-width: 100%; /* Ensure images don't exceed the width of the viewport */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Ensure images are displayed as block elements */
+            margin: 0 auto; /* Center align images */
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div style="text-align: center">
+        <!-- Adjusted path for the eye GIF -->
+        <img src="static/blink.gif" alt="eye" width="1345" height="300">
+    </div>
+<center>
+    <h1>Person Detected</h1>
+</center>
+    <p id="greeting"></p>
+
+    <!-- Video element -->
+<div class="video-container">
+    <video width="340" height="200"controls autoplay muted loop>
+        <source src="static/voice11.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+   <script>
+        // Function to speak the greeting
+        function speakGreeting(greeting, speed) {
+            var synth = window.speechSynthesis;
+            var utterThis = new SpeechSynthesisUtterance(greeting);
+            utterThis.rate = speed; // Adjust the speed here
+            synth.speak(utterThis);
+            // After speech is finished, redirect to home page
+            utterThis.onend = function() {
+                window.location.href = "/Sync"; // Redirect to home page
+            };
+        }
+
+        // Get the greeting and speed passed from Flask
+        var greeting = "{{ greeting }}";
+        var speed = 0.8; // Adjust the speed value (0.5 = half speed, 1.0 = normal speed, 2.0 = double speed, etc.)
+        
+        // Display the greeting on the page
+        //document.getElementById("greeting").textContent = greeting;
+
+        // Speak the greeting
+        speakGreeting(greeting, speed);
+    </script>
+</body>
+</html>

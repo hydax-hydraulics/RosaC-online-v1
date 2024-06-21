@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detection</title>
+  <!-- Adjusted path for jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+        /* CSS for image responsiveness */
+        img {
+            max-width: 100%; /* Ensure images don't exceed the width of the viewport */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Ensure images are displayed as block elements */
+            margin: 0 auto; /* Center align images */
+        }
+
+.video-container {
+           position: relative;
+           width: 100%;
+           padding-bottom: 56.25%; /* 16:9 aspect ratio (height / width * 100%) */
+           overflow: hidden;
+              }
+
+    .video-container video {
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+    }
+    </style>
+</head>
+<body>
+<form id="captureForm" action="/capture" method="POST">
+
+  <div style="text-align: center">
+    <!-- Adjusted path for the eye GIF -->
+    <img src="static/eye8.gif" alt="eye" width="1345" height="300">
+  </div>
+  <audio id="hiddenAudio" controls autoplay loop style="display:none;">
+    <!-- Adjusted path for the audio file -->
+    <source src="static/signature_trim.mp3"/>
+</audio>
+  <main>
+<br>
+<br>
+<br>
+<br>
+
+    <center>
+<div class="video-container">
+        <video id="video" autoplay></video>
+      </div>
+    </center>
+  </main>
+
+  <!-- Added div to display messages -->
+  <div id="message" style="text-align: center; margin-top: 20px;"></div>
+
+  <footer class="footer-section">
+    <div class="container-4">
+      <div class="nav-items"></div>
+      <div class="text-6">&copy; 2022 HYDAX Hydraulics Pvt. Ltd. All rights reserved.</div>
+    </div>
+  </footer>
+
+</form>
+
+  <script>
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        var video = document.getElementById('video');
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(function(err) {
+        console.log('Error accessing the webcam:', err);
+      });
+
+    setInterval(function() {
+      var video = document.getElementById('video');
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      var imageData = canvas.toDataURL('image/png');
+      uploadImage(imageData);
+    }, 2000);
+
+    function uploadImage(imageData) {
+      fetch('/capture', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ 'image_data': imageData }),
+      })
+      .then(response => {
+        if (response.ok) {
+          // Face detected and image saved successfully
+          document.getElementById('message').innerHTML = "Face Detected and Image saved successfully.";
+          // Check if face detected before redirecting
+          checkFaceDetection();
+        } else {
+          // Error uploading image
+          document.getElementById('message').innerHTML = "Error uploading image.";
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+
+    function checkFaceDetection() {
+      // Dummy implementation, replace this with your actual logic to check if a face is detected
+      var faceDetected = true; // Replace with your actual face detection logic
+      if (faceDetected) {
+        window.location.href = "/face__detected"; // Redirect to face__detected page
+      } else {
+        // No face detected, display a message or perform other actions as needed
+        console.log("No face detected.");
+      }
+    }
+  </script>
+</body>
+</html>

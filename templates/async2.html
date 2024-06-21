@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detection</title>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+  <div style="text-align: center">
+    <img src="static/eye8.gif" alt="eye" width="1345" height="500">
+  </div>
+  <audio controls autoplay>
+    <source src="static/signature.mp3"/>
+  </audio>
+  <main>
+    <center>
+      <div id="video-container">
+        <video id="video" autoplay></video>
+      </div>
+    </center>
+    <script>
+    var stopProcess = false; // Flag to stop the webcam process
+  
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        var video = document.getElementById('video');
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(function(err) {
+        console.log('Error accessing the webcam:', err);
+      });
+  
+    // Function to capture and upload image data
+    function captureAndUpload() {
+      if (!stopProcess) {
+        var video = document.getElementById('video');
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        var imageData = canvas.toDataURL('image/png');
+        uploadImage(imageData);
+      }
+    }
+  
+    setInterval(captureAndUpload, 5000); // Start the process initially
+  
+    function uploadImage(imageData) {
+      fetch('/process_frame', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ 'image_data': imageData }),
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Error uploading image');
+        }
+      })
+      .then(function(data) {
+        if (data.faceDetected) {
+          // If face detected, stop the process and redirect to detected.html
+          stopProcess = true;
+          window.location.href = '/detected';
+        }
+      })
+      .catch(function(error) {
+        console.error('Error uploading image:', error);
+      });
+    }
+  </script>
+  

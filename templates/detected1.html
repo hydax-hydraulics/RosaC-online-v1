@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detected</title>
+    <style>
+        /* CSS for image responsiveness */
+        img {
+            max-width: 100%; /* Ensure images don't exceed the width of the viewport */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Ensure images are displayed as block elements */
+            margin: 0 auto; /* Center align images */
+        }
+    </style>
+</head>
+<body>
+  <div style="text-align: center">
+    <!-- Adjusted path for the eye GIF -->
+    <img src="static/blink.gif" alt="eye" width="1345" height="300">
+  </div>
+
+  <h1>Face Detected</h1>
+  <p id="greeting"></p>
+
+  <script>
+    // Function to display the greeting on the page
+    function displayGreeting(greeting) {
+      document.getElementById("greeting").textContent = greeting;
+    }
+
+    // Get the greeting passed from Flask
+    var greeting = "{{ greeting }}";
+    // Display the greeting on the page
+    displayGreeting(greeting);
+  </script>
+</body>
+</html>
